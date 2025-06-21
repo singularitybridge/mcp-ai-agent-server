@@ -60,11 +60,21 @@ Send a message in a session with optional attachments.
 **Parameters:**
 - `messageContent` (required): The message content to send.
 - `attachments` (optional): An array of file attachments.
-- `sessionId` (optional): The session ID to use.
 
 **Example:**
 ```
 "Can you use send_message to say 'hello'?"
+```
+
+### `get_session`
+Get or create a session.
+
+**Parameters:**
+- None
+
+**Example:**
+```
+"Get the current session."
 ```
 
 ### `clear_session`
