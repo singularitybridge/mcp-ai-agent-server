@@ -12,25 +12,34 @@ import {
 
 export async function handleGetAssistants(context: MCPToolContext, args: GetAssistantsInput): Promise<ServerResult> {
   try {
-    // Placeholder for actual logic that would call an external API
-    // For now, just return a success message.
-    console.error(`handleGetAssistants called with args: ${JSON.stringify(args)}`);
-    console.error(`Context: ${JSON.stringify(context)}`);
+    const apiKey = process.env.AI_AGENT_API_KEY;
+    const baseUrl = process.env.AI_AGENT_BASE_URL;
 
-    // Simulate API call success
-    const simulatedAssistants = [
-      { id: 'assistant-1', name: 'Simulated Assistant A', description: 'A general purpose assistant.' },
-      { id: 'assistant-2', name: 'Simulated Assistant B', description: 'A specialized assistant.' }
-    ];
+    if (!apiKey || !baseUrl) {
+      throw new Error('AI_AGENT_API_KEY and AI_AGENT_BASE_URL must be set in the environment variables.');
+    }
+
+    const response = await fetch(`${baseUrl}/assistant`, {
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Accept': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`API call failed with status: ${response.status}`);
+    }
+
+    const assistants = await response.json();
     
     return {
       content: [
         {
           type: 'text',
-          text: `Successfully retrieved assistants: ${JSON.stringify(simulatedAssistants)}`
+          text: JSON.stringify(assistants, null, 2)
         }
       ]
-    } as ServerResult; // Explicitly cast to ServerResult
+    } as ServerResult;
   } catch (error: any) {
     console.error(`Error in handleGetAssistants: ${error.message}`);
     return {
@@ -40,32 +49,47 @@ export async function handleGetAssistants(context: MCPToolContext, args: GetAssi
           text: `Failed to get assistants: ${error.message || 'Unknown error'}`
         }
       ]
-    } as ServerResult; // Explicitly cast to ServerResult
+    } as ServerResult;
   }
 }
 
 export async function handleChangeAssistant(context: MCPToolContext, args: ChangeAssistantInput): Promise<ServerResult> {
   try {
-    // Placeholder for actual logic that would call an external API
-    // For now, just return a success message.
-    console.error(`handleChangeAssistant called with args: ${JSON.stringify(args)}`);
-    console.error(`Context: ${JSON.stringify(context)}`);
+    const apiKey = process.env.AI_AGENT_API_KEY;
+    const baseUrl = process.env.AI_AGENT_BASE_URL;
 
-    // Simulate API call success
-    const simulatedUpdatedSession = {
-      _id: args.sessionId || 'simulated-session-id',
-      assistantId: args.newAssistantId,
-      message: 'Assistant updated successfully'
-    };
+    if (!apiKey || !baseUrl) {
+      throw new Error('AI_AGENT_API_KEY and AI_AGENT_BASE_URL must be set in the environment variables.');
+    }
+
+    if (!args.sessionId) {
+      throw new Error('sessionId is required.');
+    }
+
+    const response = await fetch(`${baseUrl}/session/${args.sessionId}/assistant`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({ assistantId: args.newAssistantId }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`API call failed with status: ${response.status}`);
+    }
+
+    const updatedSession = await response.json();
     
     return {
       content: [
         {
           type: 'text',
-          text: `Assistant changed for session ${simulatedUpdatedSession._id} to ${simulatedUpdatedSession.assistantId}.`
+          text: JSON.stringify(updatedSession, null, 2)
         }
       ]
-    } as ServerResult; // Explicitly cast to ServerResult
+    } as ServerResult;
   } catch (error: any) {
     console.error(`Error in handleChangeAssistant: ${error.message}`);
     return {
@@ -75,6 +99,6 @@ export async function handleChangeAssistant(context: MCPToolContext, args: Chang
           text: `Failed to change assistant: ${error.message || 'Unknown error'}`
         }
       ]
-    } as ServerResult; // Explicitly cast to ServerResult
+    } as ServerResult;
   }
 }

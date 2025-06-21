@@ -3,7 +3,8 @@ import { ServerResult } from '@modelcontextprotocol/sdk/types.js'; // Import Ser
 import { 
   MCPToolContext,
   SendMessageInput,
-  ClearSessionInput 
+  ClearSessionInput,
+  GetSessionInput
 } from '../types.js'; // Added .js extension
 // These imports will cause issues as they are relative to the original project.
 // For now, we'll comment them out to allow compilation.
@@ -14,45 +15,134 @@ import {
 
 export async function handleSendMessage(context: MCPToolContext, args: SendMessageInput): Promise<ServerResult> {
   try {
-    // Placeholder for actual logic that would call an external API
-    // For now, just return a success message.
-    console.error(`handleSendMessage called with args: ${JSON.stringify(args)}`);
-    console.error(`Context: ${JSON.stringify(context)}`);
+    const apiKey = process.env.AI_AGENT_API_KEY;
+    const baseUrl = process.env.AI_AGENT_BASE_URL;
 
-    // Simulate API call success
-    const simulatedSessionId = args.sessionId || 'simulated-session-123';
-    const simulatedResponseText = `Message "${args.messageContent}" sent successfully to session ${simulatedSessionId}.`;
+    if (!apiKey || !baseUrl) {
+      throw new Error('AI_AGENT_API_KEY and AI_AGENT_BASE_URL must be set in the environment variables.');
+    }
 
+    const response = await fetch(`${baseUrl}/assistant/user-input`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({ userInput: args.messageContent, sessionId: context.sessionId }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`API call failed with status: ${response.status}`);
+    }
+
+    const responseData = await response.json();
+    
     return {
-      content: [{ type: 'text', text: simulatedResponseText }]
-    } as ServerResult; // Explicitly cast to ServerResult
+      content: [
+        {
+          type: 'text',
+          text: JSON.stringify(responseData, null, 2)
+        }
+      ]
+    } as ServerResult;
   } catch (error: any) {
     console.error(`Error in handleSendMessage: ${error.message}`);
     return {
-      content: [{ type: 'text', text: `Failed to send message: ${error.message || 'Unknown error'}` }]
-    } as ServerResult; // Explicitly cast to ServerResult
+      content: [
+        {
+          type: 'text',
+          text: `Failed to send message: ${error.message || 'Unknown error'}`
+        }
+      ]
+    } as ServerResult;
+  }
+}
+
+export async function handleGetSession(context: MCPToolContext, args: GetSessionInput): Promise<ServerResult> {
+  try {
+    const apiKey = process.env.AI_AGENT_API_KEY;
+    const baseUrl = process.env.AI_AGENT_BASE_URL;
+
+    if (!apiKey || !baseUrl) {
+      throw new Error('AI_AGENT_API_KEY and AI_AGENT_BASE_URL must be set in the environment variables.');
+    }
+
+    const response = await fetch(`${baseUrl}/session`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Accept': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`API call failed with status: ${response.status}`);
+    }
+
+    const session = await response.json();
+    
+    return {
+      content: [
+        {
+          type: 'text',
+          text: JSON.stringify(session, null, 2)
+        }
+      ]
+    } as ServerResult;
+  } catch (error: any) {
+    console.error(`Error in handleGetSession: ${error.message}`);
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `Failed to get session: ${error.message || 'Unknown error'}`
+        }
+      ]
+    } as ServerResult;
   }
 }
 
 export async function handleClearSession(context: MCPToolContext, args: ClearSessionInput): Promise<ServerResult> {
   try {
-    // Placeholder for actual logic that would call an external API
-    // For now, just return a success message.
-    console.error(`handleClearSession called with args: ${JSON.stringify(args)}`);
-    console.error(`Context: ${JSON.stringify(context)}`);
+    const apiKey = process.env.AI_AGENT_API_KEY;
+    const baseUrl = process.env.AI_AGENT_BASE_URL;
 
-    // Simulate API call success
-    const simulatedNewSessionId = 'simulated-new-session-456';
-    const simulatedAssistantId = 'simulated-assistant-abc';
-    const simulatedLanguage = 'en';
+    if (!apiKey || !baseUrl) {
+      throw new Error('AI_AGENT_API_KEY and AI_AGENT_BASE_URL must be set in the environment variables.');
+    }
 
+    const response = await fetch(`${baseUrl}/session/clear`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Accept': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`API call failed with status: ${response.status}`);
+    }
+
+    const newSession = await response.json();
+    
     return {
-      content: [{ type: 'text', text: `Session cleared. New session ID: ${simulatedNewSessionId}, Assistant ID: ${simulatedAssistantId}, Language: ${simulatedLanguage}.` }]
-    } as ServerResult; // Explicitly cast to ServerResult
+      content: [
+        {
+          type: 'text',
+          text: JSON.stringify(newSession, null, 2)
+        }
+      ]
+    } as ServerResult;
   } catch (error: any) {
     console.error(`Error in handleClearSession: ${error.message}`);
     return {
-      content: [{ type: 'text', text: `Failed to clear session: ${error.message || 'Unknown error'}` }]
-    } as ServerResult; // Explicitly cast to ServerResult
+      content: [
+        {
+          type: 'text',
+          text: `Failed to clear session: ${error.message || 'Unknown error'}`
+        }
+      ]
+    } as ServerResult;
   }
 }

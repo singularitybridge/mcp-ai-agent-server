@@ -13,7 +13,8 @@ import {
   SendMessageSchema,
   ClearSessionSchema,
   GetAssistantsSchema,
-  ChangeAssistantSchema
+  ChangeAssistantSchema,
+  GetSessionSchema
 } from './types.js';
 
 const server = new McpServer({
@@ -139,6 +140,28 @@ server.tool(
       return result;
     } catch (error) {
       return createErrorResponse(error, { tool: 'get_assistants', args });
+    }
+  }
+);
+
+// Tool: Get session
+server.tool(
+  'get_session',
+  GetSessionSchema.shape,
+  async (args: z.infer<typeof GetSessionSchema>, extra: any): Promise<ServerResult> => {
+    try {
+      const context: MCPToolContext = {
+        userId: extra.userId || 'default-user-id',
+        companyId: extra.companyId || 'default-company-id',
+        sessionId: extra.sessionId,
+        user: extra.user,
+        company: extra.company,
+      };
+      const operation = withRetry(() => sessionToolHandlers.handleGetSession(context, args));
+      const result = await withTimeout(operation);
+      return result;
+    } catch (error) {
+      return createErrorResponse(error, { tool: 'get_session', args });
     }
   }
 );

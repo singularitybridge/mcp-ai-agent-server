@@ -8,8 +8,7 @@ export const SendMessageSchema = z.object({
     url: z.string().url(),
     mimeType: z.string(),
     fileName: z.string()
-  })).optional().describe('File attachments for the message'),
-  sessionId: z.string().optional().describe('Session ID (creates new session if omitted)')
+  })).optional().describe('File attachments for the message')
 });
 
 export const ClearSessionSchema = z.object({
@@ -25,8 +24,13 @@ export const ChangeAssistantSchema = z.object({
   newAssistantId: z.string().describe('ID of the new assistant')
 });
 
+export const GetSessionSchema = z.object({
+  // No inputs needed - uses auth context
+});
+
 // Types
 export type SendMessageInput = z.infer<typeof SendMessageSchema>;
+export type GetSessionInput = z.infer<typeof GetSessionSchema>;
 export type ClearSessionInput = z.infer<typeof ClearSessionSchema>;
 export type GetAssistantsInput = z.infer<typeof GetAssistantsSchema>;
 export type ChangeAssistantInput = z.infer<typeof ChangeAssistantSchema>;
