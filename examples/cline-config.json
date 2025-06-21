@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "ai-agent-mcp": {
+      "command": "npx",
+      "args": ["@avi/mcp-ai-agent-server"],
+      "env": {
+        "AI_AGENT_API_KEY": "your-api-key-here",
+        "AI_AGENT_BASE_URL": "http://localhost:3000"
+      },
+      "disabled": false,
+      "autoApprove": ["get_assistants"],
+      "timeout": 30
+    }
+  }
+}

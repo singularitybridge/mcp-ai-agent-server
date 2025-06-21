@@ -1,16 +1,36 @@
 {
-  "name": "mcp-ai-agent-server",
+  "name": "@avi/mcp-ai-agent-server",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc"
+  "description": "MCP server that bridges Cline to an AI agent system.",
+  "keywords": ["mcp", "mcp-server", "cline", "ai", "llm", "ai-agent"],
+  "homepage": "https://github.com/avi/mcp-ai-agent-server",
+  "bugs": {
+    "url": "https://github.com/avi/mcp-ai-agent-server/issues"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/avi/mcp-ai-agent-server.git"
+  },
+  "license": "MIT",
+  "author": "Avi <avi@example.com>",
   "type": "module",
+  "main": "./build/index.js",
+  "types": "./build/index.d.ts",
+  "bin": {
+    "mcp-ai-agent-server": "./build/index.js"
+  },
+  "files": [
+    "build/",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc && chmod +x build/index.js",
+    "prepublishOnly": "npm run build",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "tsc --watch",
+    "inspect": "npx @modelcontextprotocol/inspector build/index.js"
+  },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.13.0",
     "axios": "^1.10.0",
@@ -18,7 +38,14 @@
     "zod-to-json-schema": "^3.24.5"
   },
   "devDependencies": {
+    "@types/node": "^20.11.24",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
