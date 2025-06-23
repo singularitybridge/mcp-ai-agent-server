@@ -118,6 +118,28 @@ Change the assistant for a session.
 | `AI_AGENT_API_KEY` | API key for authentication | Yes | - |
 | `AI_AGENT_BASE_URL` | Custom API endpoint for the AI agent system | No | `http://localhost:3000` |
 
+## Troubleshooting
+
+### Operation Timed Out
+
+If you encounter an "Operation timed out" error, it means the request to the AI agent service is taking longer than the server's default internal timeout. You can resolve this by increasing the `timeout` value in your Cline MCP settings:
+
+```json
+{
+  "mcpServers": {
+    "ai-agent-mcp": {
+      "command": "npx",
+      "args": ["@avi/mcp-ai-agent-server"],
+      "timeout": 300000, // 5 minutes
+      "env": {
+        "AI_AGENT_API_KEY": "your-api-key-here",
+        "AI_AGENT_BASE_URL": "http://localhost:3000"
+      }
+    }
+  }
+}
+```
+
 ## Development
 
 ### Build from source

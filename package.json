@@ -1,6 +1,6 @@
 {
   "name": "@avi/mcp-ai-agent-server",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "MCP server that bridges Cline to an AI agent system.",
   "keywords": ["mcp", "mcp-server", "cline", "ai", "llm", "ai-agent"],
   "homepage": "https://github.com/avi/mcp-ai-agent-server",

@@ -4,6 +4,10 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { ServerResult } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
+import { createRequire } from 'module';
+
+const require = createRequire(import.meta.url);
+const packageJson = require('../package.json');
 
 // Import tool handlers and schemas from types.ts
 import * as sessionToolHandlers from './tools/session.tools.js';
@@ -19,7 +23,7 @@ import {
 
 const server = new McpServer({
   name: "ai-agent-mcp",
-  version: "1.0.0"
+  version: packageJson.version
 });
 
 // Configuration
@@ -27,7 +31,7 @@ const config = {
   apiKey: process.env.AI_AGENT_API_KEY,
   apiBaseUrl: process.env.AI_AGENT_BASE_URL || "http://localhost:3000",
   maxRetries: 3,
-  timeout: 30000
+  timeout: 300000
 };
 
 // Utility for structured error responses
@@ -71,6 +75,9 @@ async function withTimeout<T>(
   operation: Promise<T>,
   timeoutMs: number = config.timeout
 ): Promise<T> {
+  if (timeoutMs <= 0) {
+    return operation;
+  }
   const timeout = new Promise<never>((_, reject) =>
     setTimeout(() => reject(new Error("Operation timed out")), timeoutMs)
   );
